@@ -5,8 +5,8 @@
 
 void add_point(Segment *to_segment, Vec2 point) {
     to_segment->num_points++;
-    to_segment->points = realloc(to_segment->points, to_segment->num_points * sizeof(Vec2));
-    to_segment->points[to_segment->num_points - 1] = point;
+    to_segment->points = realloc(to_segment->points, to_segment->num_points * sizeof(Point));
+    to_segment->points[to_segment->num_points - 1] = (Point) { point, to_segment };
 }
 
 Segment *add_segment(Track *to_track) {
@@ -21,12 +21,12 @@ void draw_track(Track *track) {
         Segment segment = track->segments[i];
         if (segment.num_points < 2) continue;
 
-        fog_renderer_push_line(0, segment.points[0], segment.points[segment.num_points-1], fog_V4(0, 0, 0, 1), TRACK_POINT_SIZE/2);
-        fog_renderer_push_point(0, segment.points[0], TRACK_ENDPOINT_COLOR, TRACK_POINT_SIZE);
-        fog_renderer_push_point(0, segment.points[segment.num_points-1], TRACK_ENDPOINT_COLOR, TRACK_POINT_SIZE);
+        fog_renderer_push_line(0, segment.points[0].point, segment.points[segment.num_points-1].point, fog_V4(0, 0, 0, 1), TRACK_POINT_SIZE/2);
+        fog_renderer_push_point(0, segment.points[0].point, TRACK_ENDPOINT_COLOR, TRACK_POINT_SIZE);
+        fog_renderer_push_point(0, segment.points[segment.num_points-1].point, TRACK_ENDPOINT_COLOR, TRACK_POINT_SIZE);
 
         for (u32 j = 1; j < segment.num_points-1; j++) {
-            fog_renderer_push_point(0, segment.points[j], TRACK_CONTROLPOINT_COLOR, TRACK_POINT_SIZE);
+            fog_renderer_push_point(0, segment.points[j].point, TRACK_CONTROLPOINT_COLOR, TRACK_POINT_SIZE);
         }
     }
 }
