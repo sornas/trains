@@ -19,26 +19,6 @@ Segment *add_segment(Track *to_track) {
     return &to_track->segments[to_track->num_segments - 1];
 }
 
-//TODO(gu) bezier-struct, call once and save all points and length
-void push_bezier(Segment segment) {
-    f32 len = 0.0f;
-    const real STEP = 0.01;
-    real old_x = segment.points[0].point.x;
-    real old_y = segment.points[0].point.y;
-    for (real t = STEP; t <= 1.0; t += STEP) {
-        real x = 0.0;
-        real y = 0.0;
-        for (int i = 0; i < segment.num_points; ++i) {
-            x += fog_binomial(segment.num_points-1, i) * pow((1 - t), (segment.num_points-i-1)) * pow(t, i) * segment.points[i].point.x;
-            y += fog_binomial(segment.num_points-1, i) * pow((1 - t), (segment.num_points-i-1)) * pow(t, i) * segment.points[i].point.y;
-        }
-        len += sqrt(x*x + y*y);
-        fog_renderer_push_line(0, fog_V2(old_x, old_y), fog_V2(x, y), TRACK_ENDPOINT_COLOR, TRACK_POINT_SIZE/2);
-        old_x = x;
-        old_y = y;
-    }
-}
-
 void draw_track(Track *track) {
     for (u32 i = 0; i < track->num_segments; i++) {
         Segment segment = track->segments[i];
@@ -54,3 +34,28 @@ void draw_track(Track *track) {
         }
     }
 }
+
+void get_bezier(u32 num_points, Vec2 *points) {
+    f32 len = 0.0f;
+    const u32 STEPS = 100;
+    const real STEP = 1 / (real) STEPS;
+    real x, y;
+    real t = 0.0f;
+    real old_x = points[0].x;
+    real old_y = points[0].y;
+    for (u32 i = 0; i < STEPS; i++) {
+        t += STEP;
+        x = 0.0f;
+        y = 0.0f;
+        for (int j = 0; i < num_points; ++i) {
+            x += fog_binomial(num_points-1, j) * pow((1 - t), (num_points-j-1)) * pow(t, j) * points[j].x;
+            y += fog_binomial(num_points-1, j) * pow((1 - t), (num_points-j-1)) * pow(t, j) * points[j].y;
+        }
+        // fog_V2(x, y);
+#define SQ(NEW, OLD) ((NEW - OLD) * (NEW - OLD))
+        len += sqrt(SQ(x, old_x) + SQ(y, old_y));
+#undef SQ
+    }
+    return;
+}
+

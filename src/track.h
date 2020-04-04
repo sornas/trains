@@ -33,3 +33,5 @@ void draw_track(Track *track);
 Point *add_point(Segment *to_segment, Vec2 point);
 
 Segment *add_segment(Track *to_track);
+
+void get_bezier(u32 num_points, Vec2 *points);
