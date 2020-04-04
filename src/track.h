@@ -30,6 +30,6 @@ struct Track {
 
 void draw_track(Track *track);
 
-void add_point(Segment *to_segment, Vec2 point);
+Point *add_point(Segment *to_segment, Vec2 point);
 
 Segment *add_segment(Track *to_track);
