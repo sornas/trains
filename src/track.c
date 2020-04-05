@@ -99,38 +99,26 @@ void draw_track(Track *t) {
         }
     }
 
-
-    /*
-    if (hi_segment && segment_id < t->num_segments) {
-        Segment *s = fetch_segment(t, segment_id);
-        if (!s->num_points == 0) {
-            for (u32 j = 0; j < s->num_points-1; j++) {
-                fog_renderer_push_line(0,
-                        s->points[j+0],
-                        s->points[j+1],
-                        fog_V4(1, 0, 0, 1),
-                        0.04);
-            }
-        }
-    }
-    */
-    
-    if (hi_connection && connection_id < t->num_connections) {
-        Connection *c = fetch_connection(t, connection_id);
+    for (u32 i = 0; i < t->num_connections; i++) {
+        Connection *c = &t->connections[i];
 
         Segment *s = fetch_segment(t, c->segment_a);
-        fog_renderer_push_point(0, s->points[(c->a_end == 0 ? 0 : s->num_points-1)], fog_V4(0, 1, 0, 1), 0.04);
+        fog_renderer_push_point(2, s->ends[c->a_end], fog_V4(0, 0, 0, 1), TRACK_WIDTH);
 
-        for (u32 i = 0; i < c->num_segment_b; i++) {
-            s = fetch_segment(t, c->segment_b[i]);
-            fog_renderer_push_point(0, s->points[(c->b_ends[i] == 0 ? 0 : s->num_points-1)], fog_V4(0, 1, 0, 1), 0.04);
+        /*
+        //TODO(gu) needed? does not work
+        for (u32 j = 0; j < c->num_segment_b; j++) {
+            s = fetch_segment(t, c->segment_b[j]);
+            fog_renderer_push_point(2, s->ends[c->b_ends[i]], fog_V4(0, 0, 0, 1), TRACK_WIDTH);
         }
-        if (c->segment_b) {
-            s = fetch_segment(t, c->segment_b[c->active_segment_b]);
-            fog_renderer_push_point(0, s->points[(c->b_ends[c->active_segment_b] == 0 ? 0 : s->num_points-1)], fog_V4(0, 0, 1, 1), 0.04);
-        }
+        */
     }
 
+    if (hi_connection && connection_id < t->num_connections) {
+        Connection *c = &t->connections[connection_id];
+        Segment *s = fetch_segment(t, c->segment_a);
+        fog_renderer_push_point(3, s->ends[c->a_end], fog_V4(1, 0, 0, 1), TRACK_WIDTH);
+    }
 }
 
 Segment *fetch_segment(Track *t, SegmentID id) {
@@ -142,6 +130,9 @@ Connection *fetch_connection(Track *t, ConnectionID id) {
 }
 
 void get_bezier(Segment *s) {
+    s->ends[0] = s->points[0];
+    s->ends[1] = s->points[s->num_points - 1];
+
     const u32 STEPS = 100;
     const real STEP = 1 / (real) STEPS;
     s->length = 0.0f;

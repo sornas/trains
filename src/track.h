@@ -6,8 +6,11 @@ typedef u32 SegmentID;
 typedef u32 ConnectionID;
 
 #define TRACK_BASIC_COLOR fog_V4(1.0, 1.0, 1.0, 1.0)
-#define TRACK_HIGHL_COLOR fog_V4(1.0, 0.2, 0.2, 1.0)
+#define TRACK_HIGHL_COLOR fog_V4(0.2, 1.0, 1.0, 1.0)
 #define TRACK_WIDTH 0.015
+
+#define CONNECTION_BASIC_COLOR fog_V4(0.0, 0.0, 0.0, 1.0)
+#define CONNECTION_HIGHL_COLOR fog_V4(1.0, 0.0, 0.0, 1.0)
 
 struct Segment {
     SegmentID id;
@@ -24,8 +27,7 @@ struct Segment {
 
     f32 length;
 
-    Vec2 start;
-    Vec2 end;
+    Vec2 ends[2];
 
     ConnectionID connection_start;
     ConnectionID connection_end;
