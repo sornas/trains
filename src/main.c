@@ -25,19 +25,26 @@ int main(int argc, char **argv) {
     {
         Track *t = &track;
         Segment *s;
+        SegmentID s_id;
 
         s = new_segment(t);
+        s_id = s->id;
         terminate(t, s, 0);
         add_point(s, fog_V2(-0.8, 0));
         add_point(s, fog_V2(-0.2, 0));
 
         s = next_segment(t, s);
-        add_point(s, fog_V2(-0.15, 0));
+        add_point(s, fog_V2(-0.1, 0.05));
         add_point(s, fog_V2(0.4, 0.25));
 
         s = next_segment(t, s);
         add_point(s, fog_V2(0.45, 0.25));
         add_point(s, fog_V2(0.8, 0.25));
+        terminate(t, s, 1);
+
+        s = insert_segment(t, s_id, 1);
+        add_point(s, fog_V2(-0.1, 0));
+        add_point(s, fog_V2(0.8, 0));
         terminate(t, s, 1);
     }
 

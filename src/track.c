@@ -35,6 +35,21 @@ Segment *next_segment(Track *t, Segment *s) {
     return new_s;
 }
 
+Segment *insert_segment(Track *t, SegmentID s_id, u8 s_end) {
+    // we assume a connection exist
+    Segment *new_s = new_segment(t);
+    Segment *s = fetch_segment(t, s_id);
+    Connection *c = fetch_connection(t, (s_end == 0 ? s->connection_start : s->connection_end));
+    if (c->segment_a != s->id) return NULL;  //TODO(gu) reverse_connection
+    c->num_segment_b++;
+    c->segment_b = realloc(c->segment_b, c->num_segment_b * sizeof(SegmentID));
+    c->b_ends = realloc(c->b_ends, c->num_segment_b * sizeof(u8));
+    c->segment_b[c->num_segment_b - 1] = new_s->id;
+    c->b_ends[c->num_segment_b - 1] = 0;
+    new_s->connection_start = c->id;
+    return new_s;
+}
+
 void add_point(Segment *s, Vec2 p) {
     s->num_points++;
     s->points = realloc(s->points, s->num_points * sizeof(Vec2));
