@@ -79,13 +79,22 @@ void terminate(Track *t, Segment *s, u8 s_end) {
 void draw_track(Track *t) {
     for (u32 i = 0; i < t->num_segments; i++) {
         Segment *s = &t->segments[i];
-        if (s->num_points == 0) continue;
+        if (!s->draw_points) continue;
+        /*
         for (u32 j = 0; j < s->num_points-1; j++) {
             fog_renderer_push_line(0,
                     s->points[j+0],
                     s->points[j+1],
                     fog_V4(1, 1, 1, 1),
                     0.04);
+        }
+        */
+        for (u32 j = 0; j < s->num_draw_points-1; j++) {
+            fog_renderer_push_line(0,
+                s->draw_points[j+0],
+                s->draw_points[j+1],
+                fog_V4(1, 1, 1, 1),
+                0.04);
         }
     }
 
@@ -97,8 +106,9 @@ void draw_track(Track *t) {
     fog_util_tweak_b8("Highlight segment", &hi_segment);
     fog_util_tweak_b8("Highlight connection", &hi_connection);
     fog_util_tweak_u32("Segment ID", &segment_id);
-    fog_util_tweak_u32("Highlight ID", &connection_id);
+    fog_util_tweak_u32("Connection ID", &connection_id);
 
+    /*
     if (hi_segment && segment_id < t->num_segments) {
         Segment *s = fetch_segment(t, segment_id);
         if (!s->num_points == 0) {
@@ -111,14 +121,21 @@ void draw_track(Track *t) {
             }
         }
     }
+    */
     
     if (hi_connection && connection_id < t->num_connections) {
         Connection *c = fetch_connection(t, connection_id);
 
-        fog_renderer_push_point(0, fetch_segment(t, c->segment_a)->points[c->a_end], fog_V4(0, 1, 0, 1), 0.04);
+        Segment *s = fetch_segment(t, c->segment_a);
+        fog_renderer_push_point(0, s->points[(c->a_end == 0 ? 0 : s->num_points-1)], fog_V4(0, 1, 0, 1), 0.04);
 
         for (u32 i = 0; i < c->num_segment_b; i++) {
-            fog_renderer_push_point(0, fetch_segment(t, c->segment_b[i])->points[c->b_ends[i]], fog_V4(0, 1, 0, 1), 0.04);
+            s = fetch_segment(t, c->segment_b[i]);
+            fog_renderer_push_point(0, s->points[(c->b_ends[i] == 0 ? 0 : s->num_points-1)], fog_V4(0, 1, 0, 1), 0.04);
+        }
+        if (c->segment_b) {
+            s = fetch_segment(t, c->segment_b[c->active_segment_b]);
+            fog_renderer_push_point(0, s->points[(c->b_ends[c->active_segment_b] == 0 ? 0 : s->num_points-1)], fog_V4(0, 0, 1, 1), 0.04);
         }
     }
 
@@ -132,25 +149,27 @@ Connection *fetch_connection(Track *t, ConnectionID id) {
     return &t->connections[id];
 }
 
-void get_bezier(u32 num_points, Vec2 *points) {
-    f32 len = 0.0f;
+void get_bezier(Segment *s) {
     const u32 STEPS = 100;
     const real STEP = 1 / (real) STEPS;
+    s->length = 0.0f;
+    s->num_draw_points = STEPS;
+    s->draw_points = malloc(STEPS * sizeof(Vec2));
     real x, y;
     real t = 0.0f;
-    real old_x = points[0].x;
-    real old_y = points[0].y;
+    real old_x = s->points[0].x;
+    real old_y = s->points[0].y;
     for (u32 i = 0; i < STEPS; i++) {
-        t += STEP;
         x = 0.0f;
         y = 0.0f;
-        for (u32 j = 0; i < num_points; ++i) {
-            x += fog_binomial(num_points-1, j) * pow((1 - t), (num_points-j-1)) * pow(t, j) * points[j].x;
-            y += fog_binomial(num_points-1, j) * pow((1 - t), (num_points-j-1)) * pow(t, j) * points[j].y;
+        for (u32 j = 0; j < s->num_points; ++j) {
+            x += fog_binomial(s->num_points-1, j) * pow((1 - t), (s->num_points-j-1)) * pow(t, j) * s->points[j].x;
+            y += fog_binomial(s->num_points-1, j) * pow((1 - t), (s->num_points-j-1)) * pow(t, j) * s->points[j].y;
         }
-        // fog_V2(x, y);
-#define SQ(NEW, OLD) ((NEW - OLD) * (NEW - OLD))
-        len += sqrt(SQ(x, old_x) + SQ(y, old_y));
+        t += STEP;
+        s->draw_points[i] = fog_V2(x, y);
+#define SQ(A) ((A) * (A))
+        s->length += sqrt(SQ(x - old_x) + SQ(y - old_y));
 #undef SQ
     }
 }

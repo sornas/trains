@@ -17,6 +17,8 @@ struct Segment {
     u32 num_draw_points;
     Vec2 *draw_points;
 
+    f32 length;
+
     Vec2 start;
     Vec2 end;
 
@@ -64,4 +66,4 @@ Connection *fetch_connection(Track *t, ConnectionID id);
 
 void draw_track(Track *t);
 
-void get_bezier(u32 num_points, Vec2 *points);
+void get_bezier(Segment *s);
