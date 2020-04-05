@@ -74,13 +74,39 @@ void draw_track(Track *t) {
         }
     }
 
-    for (u32 i = 0; i < t->num_connections; i++) {
-        Connection *c = &t->connections[i];
-        //fog_renderer_push_point(0, fetch_segment(t, c->segment_a)->points[0], fog_V4(1, 0, 0, 0.75), 0.04);
-        for (u32 j = 0; j < c->num_segment_b; j++) {
-            //fog_renderer_push_point(0, fetch_segment(t, c->segment_b[j])->points[0], fog_V4(0, 1, 0, 0.75), 0.04);
+    static b8 hi_segment = 0;
+    static b8 hi_connection = 0;
+    static u32 segment_id = 0;
+    static u32 connection_id = 0;
+
+    fog_util_tweak_b8("Highlight segment", &hi_segment);
+    fog_util_tweak_b8("Highlight connection", &hi_connection);
+    fog_util_tweak_u32("Segment ID", &segment_id);
+    fog_util_tweak_u32("Highlight ID", &connection_id);
+
+    if (hi_segment && segment_id < t->num_segments) {
+        Segment *s = fetch_segment(t, segment_id);
+        if (!s->num_points == 0) {
+            for (u32 j = 0; j < s->num_points-1; j++) {
+                fog_renderer_push_line(0,
+                        s->points[j+0],
+                        s->points[j+1],
+                        fog_V4(1, 0, 0, 0.66),
+                        0.04);
+            }
         }
     }
+    
+    if (hi_connection && connection_id < t->num_connections) {
+        Connection *c = fetch_connection(t, connection_id);
+
+        fog_renderer_push_point(0, fetch_segment(t, c->segment_a)->points[c->a_end], fog_V4(0, 1, 0, 0.66), 0.04);
+
+        for (u32 i = 0; i < c->num_segment_b; i++) {
+            fog_renderer_push_point(0, fetch_segment(t, c->segment_b[i])->points[c->b_ends[i]], fog_V4(0, 1, 0, 0.66), 0.04);
+        }
+    }
+
 }
 
 Segment *fetch_segment(Track *t, SegmentID id) {

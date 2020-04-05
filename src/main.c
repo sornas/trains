@@ -27,12 +27,17 @@ int main(int argc, char **argv) {
         Segment *s;
 
         s = new_segment(t);
-        add_point(s, fog_V2(-0.5, 0));
-        add_point(s, fog_V2(0, 0));
+        terminate(t, s, 0);
+        add_point(s, fog_V2(-0.8, 0));
+        add_point(s, fog_V2(-0.2, 0));
 
         s = next_segment(t, s);
-        add_point(s, fog_V2(0, 0));
-        add_point(s, fog_V2(0.5, 0.25));
+        add_point(s, fog_V2(-0.15, 0));
+        add_point(s, fog_V2(0.4, 0.25));
+
+        s = next_segment(t, s);
+        add_point(s, fog_V2(0.45, 0.25));
+        add_point(s, fog_V2(0.8, 0.25));
         terminate(t, s, 1);
     }
 
