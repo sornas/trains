@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <fog.h>
 
 #include "main.h"
@@ -20,7 +21,20 @@ int main(int argc, char **argv) {
     fog_init(argc, argv);
     fog_renderer_set_window_size(800, 800);
     fog_renderer_turn_on_camera(0);
-    fog_renderer_fetch_camera(0)->zoom = 0.8;
+
+    {
+        Track *t = &track;
+        Segment *s;
+
+        s = new_segment(t);
+        add_point(s, fog_V2(-0.5, 0));
+        add_point(s, fog_V2(0, 0));
+
+        s = next_segment(t, s);
+        add_point(s, fog_V2(0, 0));
+        add_point(s, fog_V2(0.5, 0.25));
+        terminate(t, s, 1);
+    }
 
     fog_run(update, draw);
     return 0;

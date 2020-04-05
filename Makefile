@@ -82,3 +82,5 @@ clean:
 	rm -f $(ASSET_FILE)
 	rm -f *.o
 
+gdb: $(GAME)
+	gdb ./$(GAME)
