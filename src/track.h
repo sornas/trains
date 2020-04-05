@@ -5,8 +5,13 @@ typedef struct Track Track;
 typedef u32 SegmentID;
 typedef u32 ConnectionID;
 
+#define TRACK_BASIC_COLOR fog_V4(1.0, 1.0, 1.0, 1.0)
+#define TRACK_HIGHL_COLOR fog_V4(1.0, 0.2, 0.2, 1.0)
+#define TRACK_WIDTH 0.015
+
 struct Segment {
     SegmentID id;
+
     /* input */
 
     u32 num_points;

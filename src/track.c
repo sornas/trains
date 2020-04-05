@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include <math.h>
 
 #include <fog.h>
@@ -77,27 +76,6 @@ void terminate(Track *t, Segment *s, u8 s_end) {
 }
 
 void draw_track(Track *t) {
-    for (u32 i = 0; i < t->num_segments; i++) {
-        Segment *s = &t->segments[i];
-        if (!s->draw_points) continue;
-        /*
-        for (u32 j = 0; j < s->num_points-1; j++) {
-            fog_renderer_push_line(0,
-                    s->points[j+0],
-                    s->points[j+1],
-                    fog_V4(1, 1, 1, 1),
-                    0.04);
-        }
-        */
-        for (u32 j = 0; j < s->num_draw_points-1; j++) {
-            fog_renderer_push_line(0,
-                s->draw_points[j+0],
-                s->draw_points[j+1],
-                fog_V4(1, 1, 1, 1),
-                0.04);
-        }
-    }
-
     static b8 hi_segment = 0;
     static b8 hi_connection = 0;
     static u32 segment_id = 0;
@@ -107,6 +85,20 @@ void draw_track(Track *t) {
     fog_util_tweak_b8("Highlight connection", &hi_connection);
     fog_util_tweak_u32("Segment ID", &segment_id);
     fog_util_tweak_u32("Connection ID", &connection_id);
+
+    for (u32 i = 0; i < t->num_segments; i++) {
+        Segment *s = &t->segments[i];
+        if (!s->draw_points) continue;
+        for (u32 j = 0; j < s->num_draw_points-1; j++) {
+            fog_renderer_push_line(
+                    (hi_segment && segment_id == s->id ? 1 : 0),
+                    s->draw_points[j+0],
+                    s->draw_points[j+1],
+                    (hi_segment && segment_id == s->id ? TRACK_HIGHL_COLOR : TRACK_BASIC_COLOR),
+                    TRACK_WIDTH);
+        }
+    }
+
 
     /*
     if (hi_segment && segment_id < t->num_segments) {
@@ -153,13 +145,13 @@ void get_bezier(Segment *s) {
     const u32 STEPS = 100;
     const real STEP = 1 / (real) STEPS;
     s->length = 0.0f;
-    s->num_draw_points = STEPS;
-    s->draw_points = malloc(STEPS * sizeof(Vec2));
+    s->num_draw_points = STEPS+1;
+    s->draw_points = malloc((STEPS+1) * sizeof(Vec2));
     real x, y;
     real t = 0.0f;
     real old_x = s->points[0].x;
     real old_y = s->points[0].y;
-    for (u32 i = 0; i < STEPS; i++) {
+    for (u32 i = 0; i <= STEPS; i++) {
         x = 0.0f;
         y = 0.0f;
         for (u32 j = 0; j < s->num_points; ++j) {
