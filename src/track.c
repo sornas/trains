@@ -26,7 +26,7 @@ Segment *next_segment(Track *t, Segment *s) {
     c->segment_a = s->id;
     c->a_end = 1;
     c->num_segment_b = 1;
-    c->segment_b = malloc(1 * sizeof(Segment *));
+    c->segment_b = malloc(1 * sizeof(SegmentID));
     c->b_ends = malloc(1 * sizeof(u8));
     c->segment_b[0] = new_s->id;
     c->b_ends[0] = 0;
@@ -91,7 +91,7 @@ void draw_track(Track *t) {
                 fog_renderer_push_line(0,
                         s->points[j+0],
                         s->points[j+1],
-                        fog_V4(1, 0, 0, 0.66),
+                        fog_V4(1, 0, 0, 1),
                         0.04);
             }
         }
@@ -100,10 +100,10 @@ void draw_track(Track *t) {
     if (hi_connection && connection_id < t->num_connections) {
         Connection *c = fetch_connection(t, connection_id);
 
-        fog_renderer_push_point(0, fetch_segment(t, c->segment_a)->points[c->a_end], fog_V4(0, 1, 0, 0.66), 0.04);
+        fog_renderer_push_point(0, fetch_segment(t, c->segment_a)->points[c->a_end], fog_V4(0, 1, 0, 1), 0.04);
 
         for (u32 i = 0; i < c->num_segment_b; i++) {
-            fog_renderer_push_point(0, fetch_segment(t, c->segment_b[i])->points[c->b_ends[i]], fog_V4(0, 1, 0, 0.66), 0.04);
+            fog_renderer_push_point(0, fetch_segment(t, c->segment_b[i])->points[c->b_ends[i]], fog_V4(0, 1, 0, 1), 0.04);
         }
     }
 
