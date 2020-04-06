@@ -44,9 +44,8 @@ int main(int argc, char **argv) {
 
         s = next_segment(t, s);
         add_point(s, fog_V2(0.4, 0.1));
-        add_point(s, fog_V2(0.6, 0.1));
-        add_point(s, fog_V2(0.7, 0.1));
         add_point(s, fog_V2(0.8, 0.1));
+        add_point(s, fog_V2(0.8, 0.4));
         terminate(t, s, 1);
         get_bezier(s);
 
