@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <fog.h>
 
@@ -7,6 +8,12 @@
 Track track = {};
 
 void update() {
+    Vec2 move = fog_input_mouse_move();
+    if (fog_input_mouse_down(0)) {
+        fog_renderer_fetch_camera(0)->position = fog_add_v2(
+                fog_renderer_fetch_camera(0)->position,
+                fog_V2(-move.x/400.f, move.y/400.0f));
+    }
 }
 
 void draw() {
