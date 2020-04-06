@@ -53,6 +53,7 @@ void add_point(Segment *s, Vec2 p) {
     s->num_points++;
     s->points = realloc(s->points, s->num_points * sizeof(Vec2));
     s->points[s->num_points-1] = p;
+    get_bezier(s);
 }
 
 void connect_segment(Track *t, SegmentID a, u8 a_end, SegmentID b, u8 b_end) {

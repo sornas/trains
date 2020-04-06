@@ -33,32 +33,27 @@ int main(int argc, char **argv) {
         terminate(t, s, 0);
         add_point(s, fog_V2(-0.8, 0));
         add_point(s, fog_V2(-0.2, 0));
-        get_bezier(s);
 
         s = next_segment(t, s);
         add_point(s, fog_V2(-0.2, 0));
         add_point(s, fog_V2(0, 0));
         add_point(s, fog_V2(0.2, 0.1));
         add_point(s, fog_V2(0.4, 0.1));
-        get_bezier(s);
 
         s = next_segment(t, s);
         add_point(s, fog_V2(0.4, 0.1));
         add_point(s, fog_V2(0.8, 0.1));
         add_point(s, fog_V2(0.8, 0.4));
         terminate(t, s, 1);
-        get_bezier(s);
 
         s = insert_segment(t, s_id, 1);
         add_point(s, fog_V2(-0.2, 0));
         add_point(s, fog_V2(0.4, 0));
-        get_bezier(s);
 
         s = next_segment(t, s);
         add_point(s, fog_V2(0.4, 0));
         add_point(s, fog_V2(0.8, 0));
         terminate(t, s, 1);
-        get_bezier(s);
     }
 
     fog_run(update, draw);
