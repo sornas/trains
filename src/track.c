@@ -95,7 +95,7 @@ void draw_track(Track *t) {
                     (hi_segment && segment_id == s->id ? 1 : 0),
                     s->draw_points[j+0],
                     s->draw_points[j+1],
-                    (hi_segment && segment_id == s->id ? TRACK_HIGHL_COLOR : TRACK_BASIC_COLOR),
+                    (hi_segment && segment_id == s->id ? TRACK_COLOR_HIGHLIGHT : TRACK_COLOR_BASIC),
                     TRACK_WIDTH);
         }
     }
@@ -134,16 +134,15 @@ void get_bezier(Segment *s) {
     s->ends[0] = s->points[0];
     s->ends[1] = s->points[s->num_points - 1];
 
-    const u32 STEPS = 100;
-    const real STEP = 1 / (real) STEPS;
+    const real STEP = 1 / (real) BEZIER_STEPS;
     s->length = 0.0f;
-    s->num_draw_points = STEPS+1;
-    s->draw_points = malloc((STEPS+1) * sizeof(Vec2));
+    s->num_draw_points = BEZIER_STEPS+1;
+    s->draw_points = malloc((BEZIER_STEPS+1) * sizeof(Vec2));
     real x, y;
     real t = 0.0f;
     real old_x = s->points[0].x;
     real old_y = s->points[0].y;
-    for (u32 i = 0; i <= STEPS; i++) {
+    for (u32 i = 0; i <= BEZIER_STEPS; i++) {
         x = 0.0f;
         y = 0.0f;
         for (u32 j = 0; j < s->num_points; ++j) {

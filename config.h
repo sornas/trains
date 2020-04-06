@@ -1,0 +1,11 @@
+#define WIN_WIDTH 800
+#define WIN_HEIGHT 800
+
+#define TRACK_COLOR_BASIC fog_V4(1.0, 1.0, 1.0, 1.0)
+#define TRACK_COLOR_HIGHLIGHT fog_V4(0.2, 1.0, 1.0, 1.0)
+#define TRACK_WIDTH 0.015f
+
+#define CONNECTION_COLOR_BASIC fog_V4(0.0, 0.0, 0.0, 1.0)
+#define CONNECTION_COLOR_HIGHLIGHT fog_V4(1.0, 0.0, 0.0, 1.0)
+
+#define BEZIER_STEPS 100

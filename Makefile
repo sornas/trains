@@ -29,6 +29,7 @@ ASSETS = $(shell find res -type f -name "*.*")
 HEADERS = $(shell find src -type f -name "*.h")
 SRCS = $(shell find src -type f -name "*.c")
 OBJS = $(SRCS:src/%.c=%.o)
+CONFIG = config.h
 
 .PHONY: default run game engine asset update-engine clean $(ENGINE) all debug
 
@@ -56,8 +57,8 @@ $(GAME): $(ENGINE) $(OBJS) $(ASSET_FILE)
 	@echo "Compiling game!"
 	$(CC) $(DEBUG_FLAGS) $(OBJS) -o $@ -L$(LIB_FOLDER) $(LIBS)
 
-%.o: src/%.c $(HEADERS)
-	$(CC) $(DEBUG_FLAGS) -c $< -o $@ $(INCLUDES)
+%.o: src/%.c $(HEADERS) $(CONFIG)
+	$(CC) $(DEBUG_FLAGS) -c $< -o $@ $(INCLUDES) -include $(CONFIG)
 
 $(ASSET_BUILDER): $(ENGINE)
 
