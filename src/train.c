@@ -5,7 +5,7 @@
 Train *new_train(Track *t) {
     t->trains = realloc(t->trains, (t->num_trains + 1) * sizeof(Train));
     t->trains[t->num_trains] = (Train) { t->num_trains++, 0, 0.0f, 1};
-    return &t->trains[t->num_trains];
+    return &t->trains[t->num_trains-1];
 }
 
 Train *fetch_train(Track *t, TrainID id) {
