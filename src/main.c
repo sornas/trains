@@ -35,6 +35,7 @@ void update() {
 
 void draw() {
     draw_track(&track);
+    train_draw(&track, train);
 }
 
 int main(int argc, char **argv) {

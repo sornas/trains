@@ -19,6 +19,8 @@ Train *new_train(Track *track);
 
 Train *fetch_train(Track *t, TrainID id);
 
-void train_update(Track *t, Train *train, f32 delta);
+void train_update(Track *trach, Train *train, f32 delta);
+
+void train_draw(Track *track, Train *train);
 
 #endif  // ifndef TRAIN_H

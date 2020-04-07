@@ -6,8 +6,8 @@ typedef struct Segment Segment;
 typedef struct Track Track;
 typedef struct Train Train;
 
-typedef u32 ConnectionID;
-typedef u32 SegmentID;
-typedef u32 TrainID;
+typedef s32 ConnectionID;
+typedef s32 SegmentID;
+typedef s32 TrainID;
 
 #endif
