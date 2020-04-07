@@ -25,9 +25,9 @@ void update() {
     }
 
     if (fog_input_down(NAME(FORWARD), P1)) {
-        train->segment_position += 2.0 * delta;
+        train->segment_position += 0.5 * delta;
     } else if (fog_input_down(NAME(BACKWARD), P1)) {
-        train->segment_position -= 2.0 * delta;
+        train->segment_position -= 0.5 * delta;
     }
 
     train_update(&track, train, delta);

@@ -110,4 +110,6 @@ void draw_track(Track *track);
 // Generate a bezier-curve and store it in the segment.
 void get_bezier(Segment *segment);
 
+Vec2 point_at_bezier_length(Segment *segment, f32 length);
+
 #endif  // ifndef TRACK_H

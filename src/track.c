@@ -154,5 +154,37 @@ void get_bezier(Segment *s) {
 #define SQ(A) ((A) * (A))
         s->length += sqrt(SQ(x - old_x) + SQ(y - old_y));
 #undef SQ
+        old_x = x;
+        old_y = y;
     }
+}
+
+Vec2 point_at_bezier_length(Segment *s, f32 len_target) {
+    if (len_target == 0.0)
+        return s->ends[0];
+
+    const real STEP = 1 / (real) BEZIER_STEPS;
+    real x, y;
+    real t = 0.0f;
+    real old_x = s->points[0].x;
+    real old_y = s->points[0].y;
+    real len = 0.0f;
+    for (u32 i = 0; i <= BEZIER_STEPS; i++) {
+        x = 0.0f;
+        y = 0.0f;
+        for (u32 j = 0; j < s->num_points; ++j) {
+            x += fog_binomial(s->num_points-1, j) * pow((1 - t), (s->num_points-j-1)) * pow(t, j) * s->points[j].x;
+            y += fog_binomial(s->num_points-1, j) * pow((1 - t), (s->num_points-j-1)) * pow(t, j) * s->points[j].y;
+        }
+        t += STEP;
+#define SQ(A) ((A) * (A))
+        len += sqrt(SQ(x - old_x) + SQ(y - old_y));
+#undef SQ
+        if (len >= len_target) {
+            return fog_V2(x, y);
+        }
+        old_x = x;
+        old_y = y;
+    }
+    return s->ends[1];
 }

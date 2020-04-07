@@ -10,8 +10,6 @@
 struct Train {
     TrainID id;
 
-    Vec2 drawing_position;
-
     SegmentID segment_id;
     f32 segment_position;
     s8 direction;
