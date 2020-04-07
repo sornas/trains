@@ -1,9 +1,9 @@
-typedef struct Segment Segment;
-typedef struct Connection Connection;
-typedef struct Track Track;
+#ifndef TRACK_H
+#define TRACK_H
 
-typedef u32 SegmentID;
-typedef u32 ConnectionID;
+#include "typedef.h"
+
+#include "train.h"
 
 struct Segment {
     SegmentID id;
@@ -54,34 +54,37 @@ struct Track {
 
     u32 num_connections;
     Connection *connections;
+
+    u32 num_trains;
+    Train *trains;
 };
 
 ///*
 // Create a new unconnected connection.
-Connection *new_connection(Track *t);
+Connection *new_connection(Track *track);
 
 ///*
 // Create a new empty segment.
-Segment *new_segment(Track *t);
+Segment *new_segment(Track *track);
 
 ///*
 // Create a segment after some other segment.
-Segment *next_segment(Track *t, Segment *s);
+Segment *next_segment(Track *track, Segment *segment);
 
 ///*
 // Insert a segment after or before some other segment.
-Segment *insert_segment(Track *t, SegmentID s, u8 s_end);
+Segment *insert_segment(Track *track, SegmentID segment_id, u8 segment_end);
 
 ///*
 // Add a point to a segment.
 //
 // First and last point are the respective endpoints. Other points are used when
 // generating the bezier-curve, which is always done when a new point is added.
-void add_point(Segment *s, Vec2 p);
+void add_point(Segment *segment, Vec2 p);
 
 ///*
 // Create a connection between two segments.
-void connect_segment(Track *t, SegmentID a, u8 a_end, SegmentID b, u8 b_end);
+void connect_segment(Track *track, SegmentID a, u8 a_end, SegmentID b, u8 b_end);
 
 ///*
 //TODO(gu) Reverse a connection's ends.
@@ -89,20 +92,24 @@ void reverse_connection(Connection *c);
 
 ///*
 // Create a connection at a segment's end with no b-connections.
-void terminate(Track *t, Segment *s, u8 s_end);
+void terminate(Track *track, Segment *segment, u8 segment_end);
 
 ///*
 // Fetch a segment with a SegmentID.
-Segment *fetch_segment(Track *t, SegmentID id);
+Segment *fetch_segment(Track *track, SegmentID id);
 
 ///*
 // Fetch a connection with a ConnectionID.
-Connection *fetch_connection(Track *t, ConnectionID id);
+Connection *fetch_connection(Track *track, ConnectionID id);
+
+Train *fetch_train(Track *track, TrainID id);
 
 ///*
 // Draw all segments in a track.
-void draw_track(Track *t);
+void draw_track(Track *track);
 
 ///*
 // Generate a bezier-curve and store it in the segment.
-void get_bezier(Segment *s);
+void get_bezier(Segment *segment);
+
+#endif  // ifndef TRACK_H
