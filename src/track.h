@@ -21,7 +21,7 @@ struct Segment {
     // World-scale, (approximately) how long the curve is.
     f32 length;
 
-    // Start- and end-position of the curve.
+    // Start and end position of the curve.
     // Always equal to first and last element of points[].
     Vec2 ends[2];
 
@@ -101,8 +101,6 @@ Segment *fetch_segment(Track *track, SegmentID id);
 ///*
 // Fetch a connection with a ConnectionID.
 Connection *fetch_connection(Track *track, ConnectionID id);
-
-Train *fetch_train(Track *track, TrainID id);
 
 ///*
 // Draw all segments in a track.

@@ -1,3 +1,6 @@
+#ifndef BINDINGS_H
+#define BINDINGS_H
+
 #pragma once
 
 typedef enum {
@@ -8,3 +11,5 @@ typedef enum {
 Name bindings[NUM_BINDINGS];
 
 #define NAME(binding) bindings[binding]
+
+#endif  // ifndef BINDINGS_H

@@ -9,7 +9,7 @@
 #include "train.h"
 
 Track track = {};
-TrainID train_id;
+Train *train;
 
 void update() {
     f32 delta = fog_logic_delta();
@@ -24,20 +24,13 @@ void update() {
                 fog_V2(-move.x/((WIN_WIDTH/2.0f) * zoom), move.y/((WIN_HEIGHT/2.0f) * zoom)));
     }
 
-    Train *train = fetch_train(&track, train_id);
-
-    fog_util_tweak_u32("Train segment", &train->segment_id);
-    fog_util_tweak_f32("Train position", &train->segment_position, 1);
-
     if (fog_input_down(NAME(FORWARD), P1)) {
         train->segment_position += 2.0 * delta;
     } else if (fog_input_down(NAME(BACKWARD), P1)) {
         train->segment_position -= 2.0 * delta;
     }
 
-    if (train->segment_id < track.num_segments) {
-        //TODO(gu) fog_renderer_push_point(4, bezier_point_at_len(fetch_segment(&track, train->segment_id), train->segment_position), fog_V4(0, 1, 0,1), TRACK_WIDTH);
-    }
+    train_update(&track, train, delta);
 }
 
 void draw() {
@@ -90,7 +83,7 @@ int main(int argc, char **argv) {
         terminate(t, s, 1);
     }
 
-    train_id = new_train(&track)->id;
+    train = new_train(&track);
 
     fog_run(update, draw);
     return 0;
