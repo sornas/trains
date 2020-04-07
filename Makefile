@@ -31,7 +31,7 @@ SRCS = $(shell find src -type f -name "*.c")
 OBJS = $(SRCS:src/%.c=%.o)
 CONFIG = config.h
 
-.PHONY: default run game engine asset update-engine clean $(ENGINE) all debug
+.PHONY: default run game engine asset update-engine clean clean-all clean-engine clean-game $(ENGINE) all debug
 
 default: game
 all: clean update-engine run
@@ -50,11 +50,9 @@ run: game
 	./$(GAME)
 
 $(ASSET_FILE): $(ASSETS) $(ASSET_BUILDER)
-	@echo "Building assets!"
 	@$(ASSET_BUILDER) -o $@ $(ASSETS)
 
 $(GAME): $(ENGINE) $(OBJS) $(ASSET_FILE)
-	@echo "Compiling game!"
 	$(CC) $(DEBUG_FLAGS) $(OBJS) -o $@ -L$(LIB_FOLDER) $(LIBS)
 
 %.o: src/%.c $(HEADERS) $(CONFIG)
@@ -68,20 +66,26 @@ $(LIB_FOLDER):
 update-engine:
 	@git submodule update --remote
 
+.NOTPARALLEL: $(ENGINE)
 $(ENGINE): | $(LIB_FOLDER)
-	@echo "Compiling engine!"
 	make -C $(FOG_FOLDER) engine
 	@cp $(FOG_FOLDER)/out/libfog.* $(LIB_FOLDER)/
 	@mkdir -p inc
 	@cp $(FOG_FOLDER)/out/fog.h inc/
 
-clean:
-	@echo "Cleaning!"
-	make -C $(FOG_FOLDER) clean
-	rm -rf $(LIB_FOLDER)
+clean: clean-game
+
+clean-all: clean-engine clean-game
+
+clean-game:
 	rm -f $(GAME)
 	rm -f $(ASSET_FILE)
 	rm -f *.o
+
+clean-engine:
+	make -C $(FOG_FOLDER) clean
+	rm -rf $(LIB_FOLDER)
+
 
 gdb: $(GAME)
 	gdb ./$(GAME)
