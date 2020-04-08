@@ -30,6 +30,13 @@ void update() {
         train->segment_position -= 0.5 * delta;
     }
 
+    if (fog_input_pressed(NAME(SWITCH_INFRONT), P1)) {
+        switch_infront(train, &track);
+    }
+    if (fog_input_pressed(NAME(SWITCH_BEHIND), P1)) {
+        switch_behind(train, &track);
+    }
+
     train_update(&track, train, delta);
 }
 
@@ -50,6 +57,8 @@ int main(int argc, char **argv) {
 
     fog_input_add(fog_key_to_input_code(SDLK_w), NAME(FORWARD), P1);
     fog_input_add(fog_key_to_input_code(SDLK_s), NAME(BACKWARD), P1);
+    fog_input_add(fog_key_to_input_code(SDLK_i), NAME(SWITCH_INFRONT), P1);
+    fog_input_add(fog_key_to_input_code(SDLK_k), NAME(SWITCH_BEHIND), P1);
 
     {
         Track *t = &track;

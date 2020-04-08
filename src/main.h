@@ -6,6 +6,8 @@
 typedef enum {
     FORWARD,
     BACKWARD,
+    SWITCH_INFRONT,
+    SWITCH_BEHIND,
     NUM_BINDINGS
 } Binding;
 Name bindings[NUM_BINDINGS];
