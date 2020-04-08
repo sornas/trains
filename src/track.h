@@ -112,4 +112,6 @@ void get_bezier(Segment *segment);
 
 Vec2 point_at_bezier_length(Segment *segment, f32 length);
 
+void draw_segment_from_to(Segment *segment, u8 segment_end, f32 length);
+
 #endif  // ifndef TRACK_H

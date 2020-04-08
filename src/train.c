@@ -56,6 +56,6 @@ void train_update(Track *track, Train *train, f32 delta) {
 void train_draw(Track *track, Train *train) {
     Vec2 train_position = point_at_bezier_length(fetch_segment(track, train->segment_id), train->segment_position);
     if (train->segment_id >= 0 && train->segment_id < track->num_segments) {
-        fog_renderer_push_point(5, train_position, fog_V4(0, 1, 0,1), TRACK_WIDTH);
+        fog_renderer_push_point(15, train_position, fog_V4(0, 1, 0,1), TRACK_WIDTH);
     }
 }

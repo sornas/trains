@@ -106,6 +106,17 @@ void draw_track(Track *t) {
         Segment *s = fetch_segment(t, c->segment_a);
         fog_renderer_push_point(2, s->ends[c->a_end], fog_V4(0, 0, 0, 1), TRACK_WIDTH);
 
+        if (c->num_segment_b > 1) {
+            fog_util_tweak_u32("Active segment b", &c->active_segment_b);
+            if (c->active_segment_b >= c->num_segment_b)
+                c->active_segment_b = c->num_segment_b - 1;
+
+            draw_segment_from_to(
+                    fetch_segment(t, c->segment_b[c->active_segment_b]),
+                    c->b_ends[c->active_segment_b],
+                    0.33);
+        }
+
         /*
         //TODO(gu) needed? does not work
         for (u32 j = 0; j < c->num_segment_b; j++) {
@@ -187,4 +198,44 @@ Vec2 point_at_bezier_length(Segment *s, f32 len_target) {
         old_y = y;
     }
     return s->ends[1];
+}
+
+void reverse_points(u32 num_points, Vec2 *points) {
+    Vec2 tmp;
+    for (u32 i = 0; i < num_points/2; i++) {
+        tmp = points[num_points - (i + 1)];
+        points[num_points - (i + 1)] = points[i];
+        points[i] = tmp;
+    }
+}
+
+void draw_segment_from_to(Segment *s, u8 s_end, f32 len_target) {
+    if (s_end == 1)
+        reverse_points(s->num_draw_points, s->draw_points);
+
+    const real STEP = 1 / (real) BEZIER_STEPS;
+    real x, y;
+    real t = 0.0f;
+    real old_x = s->points[0].x;
+    real old_y = s->points[0].y;
+    real len = 0.0f;
+    for (u32 i = 0; i <= BEZIER_STEPS; i++) {
+        x = 0.0f;
+        y = 0.0f;
+        for (u32 j = 0; j < s->num_points; ++j) {
+            x += fog_binomial(s->num_points-1, j) * pow((1 - t), (s->num_points-j-1)) * pow(t, j) * s->points[j].x;
+            y += fog_binomial(s->num_points-1, j) * pow((1 - t), (s->num_points-j-1)) * pow(t, j) * s->points[j].y;
+        }
+        t += STEP;
+        s->draw_points[i] = fog_V2(x, y);
+        fog_renderer_push_line(12, fog_V2(old_x, old_y), fog_V2(x, y), TRACK_COLOR_ACTIVE, TRACK_WIDTH);
+#define SQ(A) ((A) * (A))
+        len += sqrt(SQ(x - old_x) + SQ(y - old_y));
+#undef SQ
+        if (len >= len_target) break;
+        old_x = x;
+        old_y = y;
+    }
+    if (s_end == 1)
+        reverse_points(s->num_draw_points, s->draw_points);
 }
