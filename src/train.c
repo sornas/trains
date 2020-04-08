@@ -56,6 +56,7 @@ void train_pass_connection(Track *track, Train *train, Connection *c) {
             train->segment_position = (c->b_ends[c->active_segment_b] == 1 ?
                     fetch_segment(track, c->active_segment_b)->length : 0);
             //train->direction = (c->b_ends[c->active_segment_b] == 1 ? -1 : 1);
+        }
     }
     SegmentID cur_s_id = cur_s->id;
     for (u32 i = 0; i < c->num_segment_b; i++) {
