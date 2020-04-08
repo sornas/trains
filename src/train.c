@@ -46,7 +46,6 @@ void switch_behind(Train *train, Track *track) {
     c->active_segment_b = (c->active_segment_b + 1) % c->num_segment_b;
 }
 
-//TODO(gu) check terminated ends in some way ?
 void train_pass_connection(Track *track, Train *train, Connection *c) {
     Segment *cur_s = fetch_segment(track, train->segment_id);
 
@@ -56,7 +55,12 @@ void train_pass_connection(Track *track, Train *train, Connection *c) {
             train->segment_position = (c->b_ends[c->active_segment_b] == 1 ?
                     fetch_segment(track, c->active_segment_b)->length : 0);
             //train->direction = (c->b_ends[c->active_segment_b] == 1 ? -1 : 1);
+        } else {
+            // no b-segment => terminated end
+            train->segment_position =
+                (c->a_end == 1 ? fetch_segment(track, train->segment_id)->length : 0);
         }
+        return;
     }
     SegmentID cur_s_id = cur_s->id;
     for (u32 i = 0; i < c->num_segment_b; i++) {
@@ -65,8 +69,13 @@ void train_pass_connection(Track *track, Train *train, Connection *c) {
             train->segment_position =
                 (c->a_end == 1 ? fetch_segment(track, train->segment_id)->length : 0);
             //train->direction = (c->a_end == 1 ? -1 : 1);
+            return;
         }
     }
+
+    // => terminated end
+    train->segment_position =
+        (c->a_end == 1 ? 0 : fetch_segment(track, train->segment_id)->length);
 }
 
 void train_update(Track *track, Train *train, f32 delta) {
