@@ -88,4 +88,4 @@ clean-engine:
 
 
 gdb: $(GAME)
-	gdb ./$(GAME)
+	gdb -ex "b _fog_illegal_allocation()" ./$(GAME)
