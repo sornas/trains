@@ -29,7 +29,7 @@ ASSETS = $(shell find res -type f -name "*.*")
 HEADERS = $(shell find src -type f -name "*.h")
 SRCS = $(shell find src -type f -name "*.c")
 OBJS = $(SRCS:src/%.c=%.o)
-CONFIG = config.h
+CONFIG = src/config.h
 
 .PHONY: default run game engine asset update-engine clean clean-all clean-engine clean-game $(ENGINE) all debug
 
