@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "train.h"
 
@@ -45,25 +46,23 @@ void switch_behind(Train *train, Track *track) {
     c->active_segment_b = (c->active_segment_b + 1) % c->num_segment_b;
 }
 
+//TODO(gu) check terminated ends in some way ?
 void train_pass_connection(Track *track, Train *train, Connection *c) {
     Segment *cur_s = fetch_segment(track, train->segment_id);
-    SegmentID cur_s_id = cur_s->id;
 
-    if (cur_s_id == c->segment_a) {
+    if (cur_s->id == c->segment_a) {
         if (c->segment_b) {
             train->segment_id = c->segment_b[c->active_segment_b];
             train->segment_position = (c->b_ends[c->active_segment_b] == 1 ?
                     fetch_segment(track, c->active_segment_b)->length : 0);
             //train->direction = (c->b_ends[c->active_segment_b] == 1 ? -1 : 1);
-        } else {  //TODO(gu) at terminated end
-        }
     }
+    SegmentID cur_s_id = cur_s->id;
     for (u32 i = 0; i < c->num_segment_b; i++) {
-        //TODO(gu) where is terminated end?
         if (cur_s_id == c->segment_b[i]) {
             train->segment_id = c->segment_a;
             train->segment_position =
-                (c->a_end == 1 ? fetch_segment(track, i)->length : 0);
+                (c->a_end == 1 ? fetch_segment(track, train->segment_id)->length : 0);
             //train->direction = (c->a_end == 1 ? -1 : 1);
         }
     }
