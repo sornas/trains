@@ -1,7 +1,8 @@
 GAME = banverket
 FOG_FOLDER = fog
 
-CC = gcc
+CC = x86_64-w64-mingw32-gcc
+CXX = x86_64-w64-mingw32-g++
 WARNINGS = -Werror -Wall
 FLAGS = $(WARNINGS) -std=c11
 DEBUG_FLAGS = $(FLAGS) -ggdb -O0
@@ -17,7 +18,7 @@ ifeq ($(ARCH),Linux)
 endif
 
 # Would be nice to remove some of these...
-LIBS = -lfog -lSDL2 -lSDL2main -ldl -lpthread -lc -lm
+LIBS = -lfog -lSDL2 -lSDL2main -lpthread  # -lm -ldl -lc
 ifeq ($(ARCH),Darwin)
 	LIBS += -lc++
 endif
@@ -68,7 +69,8 @@ update-engine:
 
 .NOTPARALLEL: $(ENGINE)
 $(ENGINE): | $(LIB_FOLDER)
-	make -C $(FOG_FOLDER) engine
+	make -C $(FOG_FOLDER) engine CXX=$(CXX)
+	make -C $(FOG_FOLDER) mist
 	@cp $(FOG_FOLDER)/out/libfog.* $(LIB_FOLDER)/
 	@mkdir -p inc
 	@cp $(FOG_FOLDER)/out/fog.h inc/
