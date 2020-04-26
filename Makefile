@@ -1,8 +1,9 @@
 GAME = banverket
 FOG_FOLDER = fog
 
-CC = x86_64-w64-mingw32-gcc
-CXX = x86_64-w64-mingw32-g++
+CC = gcc
+CXX = g++
+
 WARNINGS = -Werror -Wall
 FLAGS = $(WARNINGS) -std=c11
 DEBUG_FLAGS = $(FLAGS) -ggdb -O0
@@ -18,7 +19,7 @@ ifeq ($(ARCH),Linux)
 endif
 
 # Would be nice to remove some of these...
-LIBS = -lfog -lSDL2 -lSDL2main -lpthread  # -lm -ldl -lc
+LIBS = -lfog -lSDL2 -lSDL2main -lpthread -lc -lm -ldl
 ifeq ($(ARCH),Darwin)
 	LIBS += -lc++
 endif
