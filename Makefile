@@ -13,14 +13,14 @@ DEBUG_FLAGS = $(FLAGS) -ggdb -O0
 ARCH = $(shell uname -s | cut -c -5)
 ifeq ($(TARGET),WINDOWS)
 	ARCH = MINGW
+	CC = x86_64-w64-mingw32-gcc
+	CXX = x86_64-w64-mingw32-g++
 endif
 
 ENGINE = libfog.a
 ifeq ($(ARCH),MINGW)
 	# Cross compilation
 	ENGINE = libfog.lib
-	CC = x86_64-w64-mingw32-gcc
-	CXX = x86_64-w64-mingw32-g++
 endif
 ENGINE_PATH = $(LIB_DIR)/$(ENGINE)
 
