@@ -9,8 +9,12 @@ CXX = g++
 WARNINGS = -Wall
 FLAGS = $(WARNINGS) -std=c11
 DEBUG_FLAGS = $(FLAGS) -ggdb -O0
+LIBS = -lfog -lSDL2 -lSDL2main -lpthread
 
 ARCH = $(shell uname -s | cut -c -5)
+ifeq ($(ARCH),MINGW)
+	LIBS += -L/mingw64/lib
+endif
 ifeq ($(TARGET),WINDOWS)
 	ARCH = MINGW
 	CC = x86_64-w64-mingw32-gcc
@@ -24,7 +28,6 @@ ifeq ($(ARCH),MINGW)
 endif
 ENGINE_PATH = $(LIB_DIR)/$(ENGINE)
 
-LIBS = -lfog -lSDL2 -lSDL2main -lpthread
 ifneq ($(ARCH),MINGW)
 	LIBS += -lc -ldl -lm
 endif
