@@ -1,28 +1,50 @@
 GAME = banverket
 FOG_FOLDER = fog
 
-CC = gcc
-CXX = g++
+CC_GCC = gcc
+CXX_GCC = g++
+CC_MINGW = x86_64-w64-mingw32-gcc
+CXX_MINGW = x86_64-w64-mingw32-g++
 
 WARNINGS = -Werror -Wall
 FLAGS = $(WARNINGS) -std=c11
 DEBUG_FLAGS = $(FLAGS) -ggdb -O0
 LIB_FOLDER = lib
-ARCH = $(shell uname -s)
+NATIVE5 = $(shell uname -s | cut -c -5)
+ARCH5 = $(NATIVE5)
+
+ifeq ($(TARGET),WINDOWS)
+	ARCH5 = MINGW
+endif
 
 ENGINE =
-ifeq ($(ARCH),Darwin)
-	ENGINE = $(LIB_FOLDER)/libfog.dylib
+CC = 
+CXX = 
+#ifeq ($(ARCH5),Darwi)
+#	ENGINE = libfog.dylib
+#	CC = CC_GCC
+#	CXX = CXX_GCC
+#endif
+ifeq ($(ARCH5),Linux)
+	ENGINE = libfog.a
+	CC = $(CC_GCC)
+	CXX = $(CXX_GCC)
 endif
-ifeq ($(ARCH),Linux)
-	ENGINE = $(LIB_FOLDER)/libfog.a
+ifeq ($(ARCH5),MINGW)
+	ENGINE = libfog.lib
+	CC = $(CC_MINGW)
+	CXX = $(CXX_MINGW)
 endif
 
-# Would be nice to remove some of these...
-LIBS = -lfog -lSDL2 -lSDL2main -lpthread -lc -lm -ldl
-ifeq ($(ARCH),Darwin)
+LIBS = -lfog -lSDL2 -lSDL2main -lpthread
+
+ifneq ($(ARCH5),MINGW)
+	LIBS += -lm -ldl -lc
+endif
+ifeq ($(ARCH5),Darwin)
 	LIBS += -lc++
 endif
+
 INCLUDES = -Iinc
 
 ASSET_BUILDER = $(FOG_FOLDER)/out/mist
@@ -33,18 +55,19 @@ SRCS = $(shell find src -type f -name "*.c")
 OBJS = $(SRCS:src/%.c=%.o)
 CONFIG = src/config.h
 
-.PHONY: default run game engine asset update-engine clean clean-all clean-engine clean-game $(ENGINE) all debug
+.PHONY: default run game engine asset update-engine clean clean-all clean-engine clean-game $(LIB_FOLDER)/$(ENGINE) all debug
 
 default: game
 all: clean update-engine run
 game: $(GAME)
-engine: $(ENGINE)
+engine: $(LIB_FOLDER)/$(ENGINE)
 asset: $(ASSET_FILE)
 
 debug: game
 	gdb $(GAME)
 
 info:
+	$(info $(ARCH5))
 	$(info $(SRCS))
 	$(info $(OBJS))
 
@@ -54,13 +77,13 @@ run: game
 $(ASSET_FILE): $(ASSETS) $(ASSET_BUILDER)
 	@$(ASSET_BUILDER) -o $@ $(ASSETS)
 
-$(GAME): $(ENGINE) $(OBJS) $(ASSET_FILE)
+$(GAME): $(LIB_FOLDER)/$(ENGINE) $(OBJS) $(ASSET_FILE)
 	$(CC) $(DEBUG_FLAGS) $(OBJS) -o $@ -L$(LIB_FOLDER) $(LIBS)
 
 %.o: src/%.c $(HEADERS) $(CONFIG)
 	$(CC) $(DEBUG_FLAGS) -c $< -o $@ $(INCLUDES) -include $(CONFIG)
 
-$(ASSET_BUILDER): $(ENGINE)
+$(ASSET_BUILDER): $(LIB_FOLDER)/$(ENGINE)
 
 $(LIB_FOLDER):
 	@mkdir -p $@
@@ -68,11 +91,11 @@ $(LIB_FOLDER):
 update-engine:
 	@git submodule update --remote
 
-.NOTPARALLEL: $(ENGINE)
-$(ENGINE): | $(LIB_FOLDER)
-	make -C $(FOG_FOLDER) engine CXX=$(CXX)
-	make -C $(FOG_FOLDER) mist
-	@cp $(FOG_FOLDER)/out/libfog.* $(LIB_FOLDER)/
+.NOTPARALLEL: $(LIB_FOLDER)/$(ENGINE)
+$(LIB_FOLDER)/$(ENGINE): | $(LIB_FOLDER)
+	make -C $(FOG_FOLDER) engine ARCH5=$(ARCH5) ENGINE_PROGRAM_NAME=$(ENGINE) CXX=$(CXX)
+	make -C $(FOG_FOLDER) rain mist
+	@cp $(FOG_FOLDER)/out/$(ENGINE) $(LIB_FOLDER)/
 	@mkdir -p inc
 	@cp $(FOG_FOLDER)/out/fog.h inc/
 
@@ -82,6 +105,7 @@ clean-all: clean-engine clean-game
 
 clean-game:
 	rm -f $(GAME)
+	rm -f $(GAME).exe
 	rm -f $(ASSET_FILE)
 	rm -f *.o
 
