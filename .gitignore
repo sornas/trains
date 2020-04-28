@@ -1,6 +1,7 @@
 inc
 lib
 data.fog
+build
 *.o
 
-banverket
+.sconsign.dblite
