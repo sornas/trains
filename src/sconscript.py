@@ -24,4 +24,9 @@ banverket = env.Program("banverket", source=Glob("*.c"))
 
 Default(banverket)
 
-Clean(banverket, Split(f"../../lib/linux/libfog.a"))
+if platform == "linux":
+    Clean(banverket, Split(f"../../lib/linux/libfog.a"))
+
+if platform == "windows":
+    Clean(banverket, Split(f"../../lib/windows/libfog.lib"))
+    Clean(banverket, Split(f"../../build/windows/banverket.exe"))
