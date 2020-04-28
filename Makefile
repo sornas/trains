@@ -61,6 +61,9 @@ debug: $(GAME)
 %o: src/%c $(HEADERS) $(CONFIG)
 	$(CC) $(DEBUG_FLAGS) -c $< -o $@ $(INCLUDES) -include $(CONFIG)
 
+.PHONY: engine
+engine: $(ENGINE_PATH)
+
 .NOTPARALLEL: $(ENGINE_PATH)
 $(ENGINE_PATH): | $(LIB_DIR) $(INC_DIR)
 	make -C $(FOG_DIR) engine ENGINE_LIBRARY_NAME=$(ENGINE) CXX=$(CXX)
