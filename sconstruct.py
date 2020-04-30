@@ -1,14 +1,14 @@
 import subprocess
 import sys
 
-platform = ARGUMENTS.get("OS", "linux")
+platform = ARGUMENTS.get("OS", sys.platform)
 
-if platform == "linux":
-    Execute(Mkdir("lib/linux"))
+Execute(Mkdir(f"lib/{platform}"))
+
+if platform in ("linux", "darwin"):
     engine = "libfog.a"
     cxx = "g++"
 elif platform == "windows":
-    Execute(Mkdir("lib/windows"))
     engine = "libfog.lib"
     cxx = "x86_64-w64-mingw32-g++"
 else:
