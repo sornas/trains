@@ -3,15 +3,21 @@ FOG_DIR = fog
 LIB_DIR = lib
 INC_DIR = inc
 
+ARCH := $(shell uname -s | cut -c -5)
+
 CC = gcc
 CXX = g++
 
-WARNINGS = -Wall
-FLAGS = $(WARNINGS) -std=c11
+STD = c99
+WARNINGS = -Wall -Wno-missing-braces
+FLAGS = $(WARNINGS) -std=$(STD)
 DEBUG_FLAGS = $(FLAGS) -ggdb -O0
 LIBS = -lfog -lSDL2 -lSDL2main -lpthread
 
-ARCH = $(shell uname -s | cut -c -5)
+ifeq ($(ARCH),Darwi)
+	LIBS += -lc++
+endif
+
 ifeq ($(ARCH),MINGW)
 	LIBS += -L/mingw64/lib
 endif
@@ -35,11 +41,11 @@ INCLUDES = -I$(INC_DIR)
 
 ASSET_BUILDER = $(FOG_DIR)/out/mist
 ASSET_FILE = data.fog
-ASSETS = $(shell find res/ -type f -name "*.*")
+ASSETS := $(shell find res -type f -name "*.*")
 
-HEADERS = $(shell find src/ -type f -name "*.h")
-SOURCES = $(shell find src/ -type f -name "*.c")
-OBJECTS = $(SOURCES:src/%.c=%.o)
+HEADERS := $(shell find src -type f -name "*.h")
+SOURCES := $(shell find src -type f -name "*.c")
+OBJECTS := $(SOURCES:src/%.c=%.o)
 CONFIG = src/config.h
 
 default: all
